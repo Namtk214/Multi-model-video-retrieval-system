@@ -1,0 +1,109 @@
+# Multi-Modal Video Retrieval System - Git Ignore
+
+# Database and Index Files (Large)
+*.npy
+*.bin
+faiss_index.bin
+example_index.npy
+metadata.json
+metadata.json.*
+example_metadata.json
+ocr_cache.json
+
+# Keyframes and Media Files
+keyframes*/
+keyframes/
+keyframes*/
+clip-features-32/
+objects/
+
+# Test and Example Files
+test_*.py
+example_*.py
+demo_*.py
+*_test.py
+*_example.py
+*_demo.py
+
+# Temporary and Cache Files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# API Keys and Secrets
+key.env
+keys.env
+.env
+.env.local
+secrets.json
+credentials.json
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+
+# Streamlit Cache
+.streamlit/
+
+# Model Files (if any)
+models/
+*.model
+*.pkl
+*.joblib
+
+# Backup Files
+*.backup
+*.bak
+*~
+
+# Large Data Directories
+data/
+datasets/
+videos/
+images/

@@ -1,0 +1,127 @@
+# GRAB-Style Retrieval: FAISS + Hugging Face Embeddings + **SuperGlobal** GeM Reranking
+
+## 1. Overview  
+Problem: Searching reranking frames base on clip features embedding.  
+
+Typical pipeline:
+1. **Indexing** – Store keyframe embeddings in FAISS.  
+2. **Embedding query** – Use a Hugging Face model to generate a vector for the query (text or image).  
+3. **Reranking** – Apply **SuperGlobal** reranking with **GeM** pooling to refine and reorder results.  
+4. **Return top-K** results after reranking.  
+
+This reranking step improves **precision** and **stability**, while being computationally cheaper than local feature–based reranking.
+
+---
+
+## 2. FAISS Embedding  
+- **FAISS** is an optimized library for vector storage and search.  
+- Store **keyframe embeddings** (already L2-normalized) in FAISS.  
+- When vectors are **unit-norm**, we have:  
+
+\[
+\text{cosine}(x,y) = x \cdot y
+\]
+
+Thus we can use **IndexFlatIP** (inner product) instead of cosine.
+
+Process:
+- Build a FAISS index from the embeddings.  
+- When given a query embedding, retrieve the top-M initial candidates.  
+- These candidates will be passed into the reranking stage.
+
+---
+
+## 3. Embedding query with Hugging Face  
+<!-- - Use embedding models such as **CLIP** (e.g., `openai/clip-vit-large-patch14`), **SigLIP**, or **BEiT-3**.  -->
+- Use Coca embedding models for text input query!!!
+- These models map both **text** and **images** into the same vector space.  
+- After generating embeddings, apply **L2 normalization** for consistent similarity metrics.  
+
+Result: a query vector \( q \in \mathbb{R}^D \) to be matched against frame embeddings in FAISS.
+
+---
+
+## 4. SuperGlobal Reranking with GeM  
+
+### 4.1 GeM Pooling  
+**Generalized Mean (GeM) pooling** over a set of vectors \( X = \{x_j\}_{j=1}^n \), each of dimension \( D \):  
+
+\[
+\operatorname{GeM}_p(X) = \left( \frac{1}{n} \sum_{j=1}^{n} x_j^p \right)^{1/p}, \quad p > 0
+\]
+
+- Computed element-wise across dimensions.  
+- The result is then **L2-normalized**.  
+
+Two special cases:
+- \( p = 1 \) → **Average pooling**  
+- \( p \to \infty \) → **Max pooling**
+
+---
+
+### 4.2 Steps of SuperGlobal  
+
+1. **Query expansion (QE)**  
+   - Take the original query \( q \) and the top-R candidates from FAISS.  
+   - Apply **max pooling (p→∞)**:  
+
+   \[
+   q' = \max \big( \{q\} \cup \{f_i\}_{i=1}^R \big)
+   \]  
+
+   - Normalize:  
+
+   \[
+   q' \leftarrow \frac{q'}{\|q'\|}
+   \]
+
+2. **Image descriptor refinement**  
+   - For each candidate \( f_i \), choose a neighborhood \( \mathcal{N}_i \) within the top-M (e.g., L nearest candidates):
+   ->  You choose all top embedding features in previous step output as neighborhood
+   - Compute **GeM with p=1 (average pooling)**:  
+
+   \[
+   f_i' = \operatorname{GeM}_{p=1} \big( \{f_i\} \cup \mathcal{N}_i \big)
+   \]  
+
+   - Normalize:  
+
+   \[
+   f_i' \leftarrow \frac{f_i'}{\|f_i'\|}
+   \]
+
+3. **Compute new scores and rerank**  
+   - The score for each refined candidate:  
+
+   \[
+   s_i = \langle q', f_i' \rangle = \cos(q', f_i')
+   \]  
+
+   - Sort candidates \( f_i \) by \( s_i \) to obtain the reranked list.
+
+---
+
+## 5. Output after reranking  
+The top-K candidate list includes:  
+- Rank  
+- Score \( s_i \)  
+- Name file
+
+---
+
+## 6. Practical notes  
+- **L2-normalize** all vectors before indexing/search.  
+- For large datasets, use **IVF-PQ** or **HNSW** instead of Flat Index.  
+- Parameter choices:  
+  - \( M \) (initial candidates): 200–800  
+  - \( R \) (QE neighbors): 5–15  
+  - \( L \) (refinement neighbors): 5–20  
+- If candidates come from multiple videos, restrict \( \mathcal{N}_i \) to **same-video neighbors** to preserve temporal context.  
+- After reranking, results can be fed into a **temporal search** stage (e.g., ABTS from the paper).
+
+---
+
+## 7. References  
+- **SuperGlobal reranking** — Shao et al., *ICCV 2023*. “Global Features are All You Need for Image Retrieval and Reranking.”  
+- **GeM pooling** — Radenović et al., *CVPR 2018*. “Fine-tuning CNN Image Retrieval with No Human Annotation.”  
+- **IViSE 2025 (GRAB)** — Nguyen-Nhu et al., *CVPR 2025 IViSE Workshop*. “A Lightweight Moment Retrieval System with Global Re-Ranking and Robust Adaptive Bidirectional Temporal Search.”  

@@ -1,0 +1,15 @@
+# AI Agent Processing Flow** ( you can refer to HCM AI Base line/Agent folder for mor information) **Advanced Query Processing**: **Step 1: Visual Event Extraction** (VisualEventExtractor)
+python
+Original Query: "Find scenes where someone is cooking pasta"
+│
+├── LLM Processing (Gemini 2.5 Flash)
+│   ├── Extract visual elements: "person, cooking, pasta, kitchen"
+│   ├── Extract actions: "stirring, boiling, preparing food"  
+│   └── Suggest objects: ["person", "bowl", "spoon", "stove"]
+│
+└── Rephrased Query: "person cooking food in kitchen with utensils"
+**Step 2: Enhanced Search** 
+1. Use rephrased query for better embedding match 
+2. Perform initial vector search with previous pipeline with new rephrased query above. 
+3. Update metadata.json with new object folder for each frame 
+4. Filter results using suggested objects in frame with respect to object class in objects folder
