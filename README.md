@@ -2,13 +2,20 @@
 
 An advanced video frame retrieval system that combines **semantic embeddings**, **object detection**, and **OCR text extraction** to provide highly accurate video search capabilities with confidence scoring.
 
-## 🔥 Key Features
+##  System Architecture
 
-### Multi-Modal Confidence Scoring
-- **60%** Semantic similarity (CLIP embeddings)
-- **25%** Object detection confidence matching
-- **15%** OCR text similarity matching
-- **+5%** Bonus for frames matching both objects AND text
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-1/pipeline%20project.png)
+
+
+
+## Key Features
+
+### Multi Modal task: Object detection and Optical Character Recognition (OCR) 
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-2/OD%20and%20OCR.png)
+- **Faster RCNN**, light weight models for trained in large dataset with enumerous class.
+- **Mistral AI OCR**, latest model from mistral for OCR tasks.
+- Accuracy approximately 80%.
+
 
 ### AI-Powered Query Enhancement
 - **Gemini 2.5 Flash** integration for intelligent query processing
@@ -27,38 +34,7 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 - Adjustable confidence thresholds
 - Detailed result analysis with matched objects and OCR text
 
-## 🏗️ System Architecture
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Query Input   │───▶│   AI Agent      │───▶│  Multi-Modal    │
-│                 │    │  (Gemini 2.5)   │    │   Retrieval     │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                         │
-                       ┌─────────────────────────────────┼─────────────────────────────────┐
-                       │                                 ▼                                 │
-                       │                    ┌─────────────────────┐                       │
-                       │                    │  FAISS Vector      │                       │
-                       │                    │     Search         │                       │
-                       │                    └─────────────────────┘                       │
-                       │                                 │                                 │
-                       ▼                                 ▼                                 ▼
-            ┌─────────────────────┐           ┌─────────────────────┐           ┌─────────────────────┐
-            │   Object Detection  │           │   Semantic          │           │   OCR Text          │
-            │    Filtering        │           │   Embeddings        │           │   Filtering         │
-            │     (25%)           │           │     (60%)           │           │     (15%)           │
-            └─────────────────────┘           └─────────────────────┘           └─────────────────────┘
-                       │                                 │                                 │
-                       └─────────────────────────────────┼─────────────────────────────────┘
-                                                         ▼
-                                              ┌─────────────────────┐
-                                              │  Combined Score     │
-                                              │   + Confidence      │
-                                              │     Boosting        │
-                                              └─────────────────────┘
-```
-
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 ```bash
