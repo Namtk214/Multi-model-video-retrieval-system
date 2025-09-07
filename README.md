@@ -2,9 +2,10 @@
 
 An advanced video frame retrieval system that combines **semantic embeddings**, **object detection**, and **OCR text extraction** to provide highly accurate video search capabilities with confidence scoring.
 
-Link dataset: 
+## Link dataset: 
 - https://docs.google.com/spreadsheets/d/1PGE28vdyZVfOBW85PqwY3rcYZVGXEI_wL4a8Ci-c4Gk/edit?gid=0#gid=0
-Link query for testing system: 
+
+## Link query for testing system: 
 - https://www.codabench.org/datasets/download/b45400ed-56c7-4576-9a78-ea9eb340b406/
 - https://www.codabench.org/datasets/download/5bed0287-eca1-461c-9c03-0a41ff43d0bd/
 
@@ -38,7 +39,7 @@ Link query for testing system:
 - Visual event extraction from natural language queries
 
 ### Embedding model and vector database
-![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/main/Coca%20embedding%20model.png)
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/main/GeM.png)
 - **Coca embedding** using contrastive learning and adding attention layers
 - **FAISS** using faiss as vector database for optimizing cosine similarity search process.
 - 
