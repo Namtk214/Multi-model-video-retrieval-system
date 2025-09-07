@@ -10,11 +10,12 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 
 ## Key Features
 
-### Multi-Modal Confidence Scoring
-- **60%** Semantic similarity (CLIP embeddings)
-- **25%** Object detection confidence matching
-- **15%** OCR text similarity matching
-- **+5%** Bonus for frames matching both objects AND text
+### Multi Modal task: Object detection and Optical Character Recognition (OCR) 
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-1/pipeline%20project.png)
+- **Faster RCNN**, light weight models for trained in large dataset with enumerous class.
+- **Mistral AI OCR**, latest model from mistral for OCR tasks.
+- Accuracy approximately 80%.
+
 
 ### AI-Powered Query Enhancement
 - **Gemini 2.5 Flash** integration for intelligent query processing
