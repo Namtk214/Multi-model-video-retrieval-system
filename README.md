@@ -1,6 +1,12 @@
-# 🤖 Multi-Modal Video Retrieval System
+# Multi-Modal Video Retrieval System
 
 An advanced video frame retrieval system that combines **semantic embeddings**, **object detection**, and **OCR text extraction** to provide highly accurate video search capabilities with confidence scoring.
+
+Link dataset: 
+- https://docs.google.com/spreadsheets/d/1PGE28vdyZVfOBW85PqwY3rcYZVGXEI_wL4a8Ci-c4Gk/edit?gid=0#gid=0
+Link query for testing system: 
+- https://www.codabench.org/datasets/download/b45400ed-56c7-4576-9a78-ea9eb340b406/
+- https://www.codabench.org/datasets/download/5bed0287-eca1-461c-9c03-0a41ff43d0bd/
 
 ##  System Architecture
 
@@ -9,6 +15,14 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 
 
 ## Key Features
+### Preprocessing raw videos:
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-3/Transnet.png)
+- **OpenCV**, for dividing videos into frames.
+- **Transnetv2**, using a CNN base architecture for evaluating score for each frames.
+- Remove unnecessary frames base on score.
+
+
+
 
 ### Multi Modal task: Object detection and Optical Character Recognition (OCR) 
 ![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-2/OD%20and%20OCR.png)
@@ -27,11 +41,63 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 ![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/main/Coca%20embedding%20model.png)
 - **Coca embedding** using contrastive learning and adding attention layers
 - **FAISS** using faiss as vector database for optimizing cosine similarity search process.
-### Advanced Retrieval Pipeline
-- **SuperGlobal reranking** for improved result quality
-- **FAISS indexing** for efficient similarity search
-- **Vietnamese & English** language support
-- **Semantic object matching** (e.g., "bike" matches "bicycle")
+- 
+### Retrieval pipeline: Reranking method 
+
+**Generalized Mean (GeM) pooling** aggregates a set of vectors  
+\( X = \{x_j\}_{j=1}^n \), each of dimension \( D \), as:
+
+\[
+\operatorname{GeM}_p(X) = \left( \frac{1}{n} \sum_{j=1}^{n} x_j^p \right)^{1/p}, \quad p > 0
+\]
+
+- Computed element-wise across dimensions.  
+- The pooled vector is then **L2-normalized**.  
+
+**Special cases:**
+- \( p = 1 \) → **Average pooling**  
+- \( p \to \infty \) → **Max pooling**
+
+---
+
+##  SuperGlobal Steps
+
+1. **Query Expansion (QE)**  
+   - Start with the original query vector \( q \) and top-R candidates from FAISS.  
+   - Apply **max pooling (p→∞)**:  
+
+   \[
+   q' = \max \big( \{q\} \cup \{f_i\}_{i=1}^R \big)
+   \]  
+
+   - Normalize:  
+
+   \[
+   q' \leftarrow \frac{q'}{\|q'\|}
+   \]
+
+2. **Image Descriptor Refinement**  
+   - For each candidate \( f_i \), select a neighborhood \( \mathcal{N}_i \) (e.g., L nearest candidates within top-M).  
+   - Apply **GeM with p=1 (average pooling)**:  
+
+   \[
+   f_i' = \operatorname{GeM}_{p=1} \big( \{f_i\} \cup \mathcal{N}_i \big)
+   \]  
+
+   - Normalize:  
+
+   \[
+   f_i' \leftarrow \frac{f_i'}{\|f_i'\|}
+   \]
+
+3. **Scoring and Reranking**  
+   - Compute similarity scores with refined query:  
+
+   \[
+   s_i = \langle q', f_i' \rangle = \cos(q', f_i')
+   \]  
+
+   - Sort candidates by \( s_i \) to produce the final reranked list.
 
 ### Interactive Web Interface
 - **Streamlit-based UI** with real-time controls
@@ -155,81 +221,19 @@ class Config:
     METADATA_PATH = "metadata.json"
 ```
 
-### Multi-Modal Weights
+### Score for each values of model
 The system uses a weighted combination for confidence scoring:
 - **Semantic Embeddings**: 60% (primary signal)
 - **Object Detection**: 25% (visual objects)
 - **OCR Text**: 15% (textual content)
 - **Multi-modal Bonus**: +5% when both objects and text match
 
-## 🌐 Supported Languages
 
-### Vietnamese Text Processing
-- Accent normalization for better matching
-- Vietnamese-specific stop words filtering
-- Semantic keyword mapping
 
-### English Text Processing
-- Standard NLP preprocessing
-- English stop words filtering
-- Fuzzy string matching
 
-## 🎯 API Reference
 
-### EnhancedRetrievalPipeline
 
-#### `retrieve_enhanced(query, **kwargs)`
-Perform multi-modal video retrieval with confidence scoring.
 
-**Parameters:**
-- `query` (str): Natural language search query
-- `top_k` (int): Number of results to return (default: 50)
-- `use_reranking` (bool): Apply SuperGlobal reranking (default: True)
-- `use_object_filtering` (bool): Enable object detection filtering (default: True)
-- `use_text_filtering` (bool): Enable OCR text filtering (default: True)
-- `object_confidence_threshold` (float): Minimum object confidence (default: 0.3)
-- `text_similarity_threshold` (float): Minimum text similarity (default: 0.3)
-
-**Returns:**
-- `extraction_results` (dict): AI agent processing results
-- `scores` (List[float]): Combined confidence scores
-- `results` (List[dict]): Metadata for matching video frames
-
-### VisualEventExtractor
-
-#### `process_query(query)`
-Extract visual events and suggested objects from natural language query using Gemini 2.5 Flash.
-
-**Parameters:**
-- `query` (str): Input query text
-
-**Returns:**
-- Dictionary with rephrased query, visual elements, actions, and suggested objects
-
-### OCRProcessor
-
-#### `extract_text_from_image(image_path)`
-Extract text from image using Mistral OCR API.
-
-**Parameters:**
-- `image_path` (str): Path to image file
-
-**Returns:**
-- Dictionary with extracted text, confidence, and processing metadata
-
-## 📈 Performance
-
-### Benchmarks (on 177K video frames)
-- **Index Loading**: ~2 seconds
-- **Single Query**: ~3-5 seconds (with reranking)
-- **Multi-modal Filtering**: ~1-2 seconds additional
-- **Memory Usage**: ~2GB for full index
-
-### Scalability
-- Supports millions of video frames
-- Efficient FAISS indexing with IVF/HNSW options
-- Batch processing for OCR and object detection
-- Streaming inference for real-time applications
 
 ## 🛠️ Development
 
@@ -248,48 +252,17 @@ Extract text from image using Mistral OCR API.
 └── requirements.txt                  # Python dependencies
 ```
 
-### Adding New Modalities
-1. Implement feature extraction pipeline
-2. Add filtering method to `EnhancedRetrievalPipeline`
-3. Update confidence scoring weights
-4. Extend Streamlit UI for new controls
 
-### Custom Object Detection
-```python
-# Override object detection in metadata
-pipeline.update_metadata_with_objects(
-    metadata_path="metadata.json",
-    objects_base_dir="custom_objects"
-)
-```
 
-## 🤝 Contributing
+## Citation
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **TransNet V2: An effective deep network architecture for fast shot transition detection**, link: https://arxiv.org/pdf/2008.04838
+- **A Lightweight Moment Retrieval System with Global Re-Ranking and Robust Adaptive Bidirectional Temporal Search**, link: https://arxiv.org/pdf/2205.01917
+- **FAISS**, Meta AI.
+- **Gemini 2.5 flash thinking**, Google API Gemini.
+- **Mistral AI OCR**, Mistral AI API.
 
-## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **OpenAI CLIP** for semantic embeddings
-- **Google Gemini 2.5 Flash** for AI-powered query processing
-- **Mistral AI** for OCR text extraction
-- **FAISS** for efficient similarity search
-- **SuperGlobal** for advanced reranking
-- **Streamlit** for the interactive web interface
-
-## 📞 Support
-
-For questions and support:
-- 📧 Create an issue on GitHub
-- 💬 Join our discussion forum
-- 📖 Check the documentation wiki
 
 ---
 
