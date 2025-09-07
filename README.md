@@ -130,7 +130,7 @@ streamlit run streamlit_app.py
 ```
 Then open http://localhost:8501 in your browser.
 
-## 📊 Data Pipeline
+##  Data Pipeline
 
 ### 1. Extract CLIP Features
 ```python
@@ -162,27 +162,7 @@ update_metadata_with_ocr(
 )
 ```
 
-## 🔧 Configuration
 
-### Core Settings (`config.py`)
-```python
-class Config:
-    # Embedding Model
-    EMBEDDING_MODEL = "openai/clip-vit-large-patch14"
-    EMBEDDING_DIM = 768
-    
-    # FAISS Index
-    INDEX_TYPE = "flat"  # "flat", "ivf", or "hnsw"
-    
-    # Retrieval Parameters
-    TOP_K_RESULTS = 50
-    INITIAL_CANDIDATES_M = 500
-    QE_NEIGHBORS_R = 10
-    REFINEMENT_NEIGHBORS_L = 15
-    
-    # File Paths
-    INDEX_PATH = "faiss_index.bin"
-    METADATA_PATH = "metadata.json"
 ```
 
 ### Score for each values of model
@@ -191,12 +171,6 @@ The system uses a weighted combination for confidence scoring:
 - **Object Detection**: 25% (visual objects)
 - **OCR Text**: 15% (textual content)
 - **Multi-modal Bonus**: +5% when both objects and text match
-
-
-
-
-
-
 
 
 ## 🛠️ Development
@@ -228,6 +202,4 @@ The system uses a weighted combination for confidence scoring:
 
 
 
----
 
-⭐ **Star this repository if you find it helpful!**
