@@ -23,6 +23,10 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 - Automatic query rephrasing and object suggestion
 - Visual event extraction from natural language queries
 
+### Embedding model and vector database
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/main/Coca%20embedding%20model.png)
+- **Coca embedding** using contrastive learning and adding attention layers
+- **FAISS** using faiss as vector database for optimizing cosine similarity search process.
 ### Advanced Retrieval Pipeline
 - **SuperGlobal reranking** for improved result quality
 - **FAISS indexing** for efficient similarity search
