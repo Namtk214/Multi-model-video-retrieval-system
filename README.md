@@ -163,32 +163,12 @@ update_metadata_with_ocr(
 ```
 
 
-```
-
 ### Score for each values of model
 The system uses a weighted combination for confidence scoring:
 - **Semantic Embeddings**: 60% (primary signal)
 - **Object Detection**: 25% (visual objects)
 - **OCR Text**: 15% (textual content)
 - **Multi-modal Bonus**: +5% when both objects and text match
-
-
-## 🛠️ Development
-
-### Project Structure
-```
-├── enhanced_retrieval_pipeline.py    # Main multi-modal pipeline
-├── visual_event_extractor.py         # AI agent for query processing
-├── ocr_processor.py                  # OCR text extraction
-├── faiss_indexer.py                  # FAISS vector indexing
-├── retrieval_pipeline.py             # Base retrieval pipeline
-├── superglobal_reranking.py          # Result reranking
-├── streamlit_app.py                  # Web interface
-├── update_metadata_with_objects.py   # Object detection integration
-├── update_metadata_with_ocr.py       # OCR data integration
-├── config.py                         # System configuration
-└── requirements.txt                  # Python dependencies
-```
 
 
 
