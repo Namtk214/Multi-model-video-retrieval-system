@@ -17,7 +17,8 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 - Accuracy approximately 80%.
 
 
-### AI-Powered Query Enhancement
+### Query extraction and rephrasing: Agentic pipeline 
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/main/Agent%20pipeline.png)
 - **Gemini 2.5 Flash** integration for intelligent query processing
 - Automatic query rephrasing and object suggestion
 - Visual event extraction from natural language queries
