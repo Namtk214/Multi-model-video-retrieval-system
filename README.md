@@ -44,60 +44,23 @@ Link query for testing system:
 - 
 ### Retrieval pipeline: Reranking method 
 
-**Generalized Mean (GeM) pooling** aggregates a set of vectors  
-\( X = \{x_j\}_{j=1}^n \), each of dimension \( D \), as:
-
-\[
-\operatorname{GeM}_p(X) = \left( \frac{1}{n} \sum_{j=1}^{n} x_j^p \right)^{1/p}, \quad p > 0
-\]
-
+**Generalized Mean (GeM) pooling** 
 - Computed element-wise across dimensions.  
 - The pooled vector is then **L2-normalized**.  
 
 **Special cases:**
-- \( p = 1 \) → **Average pooling**  
-- \( p \to \infty \) → **Max pooling**
+-  p = 1  → **Average pooling**  
+-  p to infinity → **Max pooling**
 
 ---
 
 ##  SuperGlobal Steps
-
 1. **Query Expansion (QE)**  
    - Start with the original query vector \( q \) and top-R candidates from FAISS.  
    - Apply **max pooling (p→∞)**:  
-
-   \[
-   q' = \max \big( \{q\} \cup \{f_i\}_{i=1}^R \big)
-   \]  
-
-   - Normalize:  
-
-   \[
-   q' \leftarrow \frac{q'}{\|q'\|}
-   \]
-
 2. **Image Descriptor Refinement**  
    - For each candidate \( f_i \), select a neighborhood \( \mathcal{N}_i \) (e.g., L nearest candidates within top-M).  
    - Apply **GeM with p=1 (average pooling)**:  
-
-   \[
-   f_i' = \operatorname{GeM}_{p=1} \big( \{f_i\} \cup \mathcal{N}_i \big)
-   \]  
-
-   - Normalize:  
-
-   \[
-   f_i' \leftarrow \frac{f_i'}{\|f_i'\|}
-   \]
-
-3. **Scoring and Reranking**  
-   - Compute similarity scores with refined query:  
-
-   \[
-   s_i = \langle q', f_i' \rangle = \cos(q', f_i')
-   \]  
-
-   - Sort candidates by \( s_i \) to produce the final reranked list.
 
 ### Interactive Web Interface
 - **Streamlit-based UI** with real-time controls
