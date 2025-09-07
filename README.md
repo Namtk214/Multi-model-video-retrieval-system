@@ -11,7 +11,7 @@ An advanced video frame retrieval system that combines **semantic embeddings**, 
 ## Key Features
 
 ### Multi Modal task: Object detection and Optical Character Recognition (OCR) 
-![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-1/pipeline%20project.png)
+![System Architecture](https://github.com/Namtk214/Multi-model-video-retrieval-system/blob/Namtk214-patch-2/OD%20and%20OCR.png)
 - **Faster RCNN**, light weight models for trained in large dataset with enumerous class.
 - **Mistral AI OCR**, latest model from mistral for OCR tasks.
 - Accuracy approximately 80%.
